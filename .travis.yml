@@ -1,5 +1,4 @@
-language: generic
-services:
-  - xvfb
+language: bash
+dist: bionic
 script:
   - cat /proc/cpuinfo
