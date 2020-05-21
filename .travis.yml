@@ -1,4 +1,5 @@
 language: generic
-
+services:
+  - xvfb
 script:
   - cat /proc/cpuinfo
