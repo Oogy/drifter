@@ -4,7 +4,7 @@ last-panel='display'
 [org/gnome/desktop/background]
 color-shading-type='solid'
 picture-options='zoom'
-picture-uri='file:///home/light/drifter/hypervisor/desktop/wallpapers/redforest.jpg'
+picture-uri='file:///home/drifter/drifter/hypervisor/desktop/wallpapers/redforest.jpg'
 primary-color='#000000000000'
 secondary-color='#000000000000'
 
@@ -34,7 +34,7 @@ two-finger-scrolling-enabled=true
 [org/gnome/desktop/screensaver]
 color-shading-type='solid'
 picture-options='zoom'
-picture-uri='file:///home/light/drifter/hypervisor/desktop/wallpapers/redforest.jpg'
+picture-uri='file:///home/drifter/drifter/hypervisor/desktop/wallpapers/redforest.jpg'
 primary-color='#000000000000'
 secondary-color='#000000000000'
 
@@ -88,8 +88,8 @@ sidebar-sections=['GthFileProperties:expanded', 'GthFileComment:expanded', 'GthF
 sidebar-visible=true
 sort-inverse=false
 sort-type='file::mtime'
-startup-current-file='file:///tmp/mozilla_light0/picture609-1.png'
-startup-location='file:///tmp/mozilla_light0'
+startup-current-file='file:///tmp/mozilla_drifter0/picture609-1.png'
+startup-location='file:///tmp/mozilla_drifter0'
 statusbar-visible=true
 thumbnail-list-visible=true
 viewer-sidebar='hidden'
@@ -116,10 +116,10 @@ ignore-ca-cert=false
 ignore-phase2-ca-cert=false
 
 [org/gnome/settings-daemon/plugins/color]
-night-light-enabled=true
+night-drifter-enabled=true
 
 [org/gnome/settings-daemon/plugins/xsettings]
-hinting='slight'
+hinting='sdrifter'
 
 [org/gnome/shell]
 favorite-apps=['firefox.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.gedit.desktop', 'pamac-manager.desktop', 'org.gnome.Empathy.desktop', 'org.gnome.Screenshot.desktop']
