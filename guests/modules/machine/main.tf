@@ -35,14 +35,21 @@ resource "libvirt_domain" "machine" {
       volume_id = disk.value
     }
   }
-/*
-  disk {
-    volume_id = var.disk
+
+  dynamic "disk" {
+    for_each = var.iso
+    content {
+      file = disk.value
+    }
   }
-*/
+
   graphics {
     type        = "spice"
     listen_type = "address"
     autoport    = true
+  }
+
+  video {
+    type = var.video_mode
   }
 }

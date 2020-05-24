@@ -7,7 +7,7 @@ GRUB_DEFAULTS_DRIFTER_RAZER_BLADE_STEALTH='GRUB_CMDLINE_LINUX_DEFAULT="quiet app
 HYPERVISOR_USER=$(logname)
 HYPERVISOR_USER_HOME=/home/$HYPERVISOR_USER
 HYPERVISOR_USER_TF_PLUGINS_DIR=$HYPERVISOR_USER_HOME/.terraform.d/plugins
-HYPERVISOR_DEPS='terraform go libvirt qemu virt-viewer cdrtools ebtables dnsmasq bridge-utils gcc make lastpass-cli' 
+HYPERVISOR_DEPS='terraform go libvirt qemu virt-viewer cdrtools ebtables dnsmasq bridge-utils gcc make lastpass-cli tmux' 
 
 TERRAFORM_LIBVIRT_PROVIDER="github.com/dmacvicar/terraform-provider-libvirt"
 

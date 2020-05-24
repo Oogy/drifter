@@ -18,6 +18,11 @@ variable "disks" {
   default = []
 }
 
+variable "iso" {
+  type = list(string)
+  default = []
+}
+
 variable "network" {
   type = string
   default = null
@@ -28,3 +33,7 @@ variable "cloud_init" {
   default = null
 }
 
+variable "video_mode" {
+  type = string
+  default = "cirrus"
+}
