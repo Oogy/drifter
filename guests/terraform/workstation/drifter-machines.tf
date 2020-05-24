@@ -23,6 +23,7 @@ module "ubuntu_workstation" {
   cloud_init = module.ubuntu_config.id 
   disks = [module.main_disk.id]
   network = module.drifter_network.id
+  running = false
 }
 
 /*

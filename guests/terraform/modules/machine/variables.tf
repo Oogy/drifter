@@ -27,3 +27,4 @@ variable "cloud_init" {
   type = string
   default = null
 }
+
