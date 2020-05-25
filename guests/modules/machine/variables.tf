@@ -47,3 +47,8 @@ variable "graphics_type" {
   type = string
   default = "spice"
 }
+
+variable "wait_for_lease" {
+  type = string
+  default = true
+}

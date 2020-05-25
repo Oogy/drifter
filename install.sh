@@ -7,7 +7,7 @@ GRUB_DEFAULTS_DRIFTER_RAZER_BLADE_STEALTH='GRUB_CMDLINE_LINUX_DEFAULT="quiet app
 HYPERVISOR_USER=$(logname)
 HYPERVISOR_USER_HOME=/home/$HYPERVISOR_USER
 HYPERVISOR_USER_TF_PLUGINS_DIR=$HYPERVISOR_USER_HOME/.terraform.d/plugins
-HYPERVISOR_DEPS='terraform go libvirt qemu virt-viewer cdrtools ebtables dnsmasq bridge-utils gcc make lastpass-cli tmux' 
+HYPERVISOR_DEPS='terraform go libvirt qemu virt-viewer cdrtools ebtables dnsmasq bridge-utils gcc make lastpass-cli tmux cockpit cockpit-machines jq' 
 
 TERRAFORM_LIBVIRT_PROVIDER="github.com/dmacvicar/terraform-provider-libvirt"
 
@@ -74,13 +74,18 @@ hypervisor_user(){
   usermod -G libvirt $HYPERVISOR_USER
 }
 
-hypervisor_setup(){
-  hypervisor_deps
-  hypervisor_user
-
+hypervisor_services(){
   systemctl start libvirtd
   systemctl enable libvirtd
 
+  systemctl start cockpit
+  systemctl enable cockpit
+}
+
+hypervisor_setup(){
+  hypervisor_deps
+  hypervisor_user
+  hypervisor_services
   terraform_setup
 }
 

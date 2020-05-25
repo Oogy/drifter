@@ -1,3 +1,11 @@
+module "ubuntu_focal_base_image" {
+  source = "../modules/base-image"
+
+  image_name = "ubuntu-focal-base"
+  image_source = "http://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img"
+}
+
+/*
 module "ubuntu_bionic_base_image" {
   source = "../modules/base-image"
 
@@ -18,3 +26,11 @@ module "ubuntu_focal_live" {
   image_name   = "ubuntu-focal-live"
   image_source = "https://releases.ubuntu.com/20.04/ubuntu-20.04-desktop-amd64.iso"
 }
+
+module "manjaro_gnome_live" {
+  source = "../modules/base-image"
+
+  image_name   = "manjaro-gnome-live.iso"
+  image_source = "https://osdn.net/frs/redir.php?m=gigenet&f=%2Fstorage%2Fg%2Fm%2Fma%2Fmanjaro%2Fgnome%2F20.0.1%2Fmanjaro-gnome-20.0.1-200511-linux56.iso"
+}
+*/

@@ -12,7 +12,8 @@ resource "libvirt_domain" "machine" {
 
   network_interface {
     network_id = var.network
-    wait_for_lease = true
+    hostname = var.name
+    wait_for_lease = var.wait_for_lease
   }
 
   # IMPORTANT: this is a known bug on cloud images, since they expect a console
