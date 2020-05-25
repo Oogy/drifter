@@ -15,7 +15,7 @@ variable "network_domain" {
 
 variable "network_cidr" {
   type    = list(string)
-  default = ["10.77.77.0/24"]
+  default = []
 }
 
 variable "dns_enabled" {
