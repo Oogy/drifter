@@ -1,5 +1,5 @@
 output "home" {
-  value = [ module.home.id, module.home.name, module.home.domain, module.home.cidr[0] ]
+  value = { id = module.home.id, name = module.home.name, domain = module.home.domain, cidr = module.home.cidr[0] }
 }
 
 output "work" {
@@ -7,6 +7,6 @@ output "work" {
 }
 
 output "secure" {
-  value = [ module.secure.id, module.secure.name, module.secure.domain, module.secure.cidr[0] ]
+  value = { id = module.secure.id, name = module.secure.name, domain = module.secure.domain, cidr = module.secure.cidr[0] }
 }
 

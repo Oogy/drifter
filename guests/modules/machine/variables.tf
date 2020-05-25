@@ -37,3 +37,13 @@ variable "video_mode" {
   type = string
   default = "cirrus"
 }
+
+variable "running" {
+  type = bool
+  default = true
+}
+
+variable "graphics_type" {
+  type = string
+  default = "spice"
+}

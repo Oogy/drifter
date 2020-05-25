@@ -6,6 +6,7 @@ resource "libvirt_domain" "machine" {
   name   = var.name
   memory = var.memory
   vcpu   = var.vcpus
+  running = var.running
 
   cloudinit = var.cloud_init
 
@@ -44,7 +45,7 @@ resource "libvirt_domain" "machine" {
   }
 
   graphics {
-    type        = "spice"
+    type        = var.graphics_type
     listen_type = "address"
     autoport    = true
   }
