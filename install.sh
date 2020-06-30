@@ -1,98 +1,92 @@
 #!/bin/bash
-#set -euxo
-set -euo
+set -eu
 
-GRUB_DEFAULTS_DRIFTER_RAZER_BLADE_STEALTH='GRUB_CMDLINE_LINUX_DEFAULT="quiet apparmor=1 security=apparmor udev.log_priority=3 intel_idle.max_cstate=4 button.lid_init_state=open pci=nomsi"'
+RPM_OSTREE_LAYERS='gtk-murrine-engine gtk2-engines gnome-tweaks lastpass-cli systemd-container'
+WALLPAPERS_DIR=$(pwd)/wallpapers
+AVAILABLE_WALLPAPERS=$(ls $WALLPAPERS_DIR)
+SUPPORTED_DEVICES="Blade Stealth, Blade 15"
 
-HYPERVISOR_USER=$(logname)
-HYPERVISOR_USER_HOME=/home/$HYPERVISOR_USER
-HYPERVISOR_USER_TF_PLUGINS_DIR=$HYPERVISOR_USER_HOME/.terraform.d/plugins
-HYPERVISOR_DEPS='terraform go libvirt qemu virt-viewer cdrtools ebtables dnsmasq bridge-utils gcc make lastpass-cli tmux cockpit cockpit-machines jq' 
 
-TERRAFORM_LIBVIRT_PROVIDER="github.com/dmacvicar/terraform-provider-libvirt"
+wallpaper(){
+  WALLPAPER=$1
+  if [ ! -f $WALLPAPERS_DIR/$WALLPAPER ]; then
+    echo "==> Wallpaper does not exist, use one of the following:"
+    tree $WALLPAPERS_DIR
+    exit 1
+  fi
 
-GOPATH=$HYPERVISOR_USER_HOME/go
+  gsettings set org.gnome.desktop.background picture-uri file://$WALLPAPERS_DIR/$WALLPAPER
+}
 
-if [ $(whoami) != "root" ]; then
-  echo "==> Must be run as root."
-  exit 1
-fi
+help_message(){
+      echo "Script Usage:"
+      echo " "
+      echo "	-l - install rpm-ostree [l]ayers"
+      echo "	-d - setup specified [d]evice: [$SUPPORTED_DEVICES]"
+      echo "	-h - print this [h]elp message"
+      echo "	-g - install [g]nome theme(Matcha Dark Aliz)"
+      echo "	-w - set [w]allpaper: [$AVAILABLE_WALLPAPERS]"
+      echo " "
+}
 
-hw_setup(){
-  device=$(dmidecode | grep "Product Name:" | uniq | tr -d '\t')
+gnome_theme(){
+  if [ ! -d $HOME/.themes ]; then
+    mkdir $HOME/.themes
+  fi
 
-  case $device in
-  "Product Name: Blade Stealth")
-    echo "==> Setting up $device"
-    hw_setup_razer_blade_stealth
-    ;;
-  esac  
+  git clone https://github.com/vinceliuice/Matcha-gtk-theme
+  ./Matcha-gtk-theme/install.sh -c dark -t aliz
+  rm -rf ./Matcha-gtk-theme
+}
+
+rpm_ostree_layers(){
+  rpm-ostree install $RPM_OSTREE_LAYERS
 }
 
 hw_setup_razer_blade_stealth(){
-  GRUB_DEFAULTS_CURRENT=$(cat /etc/default/grub | grep GRUB_CMDLINE_LINUX_DEFAULT)
-
-  if [ "$GRUB_DEFAULTS_DRIFTER_RAZER_BLADE_STEALTH" != "$GRUB_DEFAULTS_CURRENT" ]; then
-    echo "==> Updating grub defaults..."
-    sed -i "s/$GRUB_DEFAULTS_CURRENT/$GRUB_DEFAULTS_DRIFTER_RAZER_BLADE_STEALTH/" /etc/default/grub
-    update-grub    
-  else
-    echo "==> Grub defaults are good."
-  fi
+  rpm-ostree kargs --append intel_idle.max_cstate=4 --append button.lid_init_state=open --append pci=nomsi
 }
 
-system_update(){
-  echo "==> Updating Pacman mirrors"
-  pacman-mirrors --api --geoip 
-  echo "==> Updating Manjaro system"
-  pacman -Syyu
+hw_setup(){
+  case $DEVICE in
+  "Blade Stealth")
+    echo "==> Setting kernel params for $DEVICE"
+    hw_setup_razer_blade_stealth
+    ;;
+  *)
+    echo "==> $DEVICE not supported, use: $SUPPORTED_DEVICES"
+    ;;
+  esac
 }
 
-hypervisor_deps(){
-  echo "==> Provisioning hypervisor..."
-  echo "==> Installing $HYPERVISOR_DEPS"
-  pacman -S $HYPERVISOR_DEPS
-}
+while getopts 'ld:gw:h' OPTION; do
+  case "$OPTION" in
+    l)
+      echo "==> Layering RPM-OSTree packages: $RPM_OSTREE_LAYERS"
+      rpm_ostree_layers
+      ;;
+    d)
+      DEVICE="$OPTARG"
+      echo "==> Setting kernel args for [d]evice: $DEVICE"
+      hw_setup
+      ;;
+    g)
+      echo "==> Installing Gnome theme Matcha Dark Aliz"
+      gnome_theme
+      ;;
+    w)
+      WALLPAPER="$OPTARG"
+      echo "==> Setting wallpaper $WALLPAPER"
+      wallpaper $WALLPAPER
+      ;;
+    h)
+      help_message
+      ;;
+    ?)
+      help_message
+      exit 1
+      ;;
+  esac
+done
+shift "$(($OPTIND -1))"
 
-terraform_setup(){
-  echo "==> Setting up Terraform"
-
-  if [ ! -d $HYPERVISOR_USER_TF_PLUGINS_DIR ]; then
-    sudo -u $HYPERVISOR_USER bash -c "cd && mkdir -p $HYPERVISOR_USER_TF_PLUGINS_DIR"
-  fi 
-  
-  echo "==> Getting $TERRAFORM_LIBVIRT_PROVIDER"
-  sudo -u $HYPERVISOR_USER bash -c "cd && go get -v $TERRAFORM_LIBVIRT_PROVIDER"
-
-  echo "==> Building $TERRAFORM_LIBVIRT_PROVIDER"
-  sudo -u $HYPERVISOR_USER bash -c "cd $GOPATH/src/github.com/dmacvicar/terraform-provider-libvirt && make install"
-
-  sudo -u $HYPERVISOR_USER bash -c "ln -s $GOPATH/bin/terraform-provider-libvirt $HYPERVISOR_USER_TF_PLUGINS_DIR/terraform-provider-libvirt"
-}
-
-hypervisor_user(){
-  usermod -G libvirt $HYPERVISOR_USER
-}
-
-hypervisor_services(){
-  systemctl start libvirtd
-  systemctl enable libvirtd
-
-  systemctl start cockpit
-  systemctl enable cockpit
-}
-
-hypervisor_setup(){
-  hypervisor_deps
-  hypervisor_user
-  hypervisor_services
-  terraform_setup
-}
-
-main(){
-  hw_setup
-  system_update
-  hypervisor_setup
-}
-
-main
