@@ -8,6 +8,7 @@ AVAILABLE_WALLPAPERS=$(ls $WALLPAPERS_DIR)
 SUPPORTED_DEVICES="Blade Stealth, Blade 15"
 WALLPAPER="redforest.jpg"
 DEVICE=$(sudo dmidecode -s baseboard-product-name)
+MY_HOSTNAME="rucksack"
 
 wallpaper(){
   if [ ! -f $WALLPAPERS_DIR/$WALLPAPER ]; then
@@ -57,7 +58,13 @@ hw_setup(){
   esac
 }
 
+set_hostname(){
+  hostnamectl set $MY_HOSTNAME
+}
+
 main(){
+  echo "==> Setting hostname $MY_HOSTNAME"
+  set_hostname
   echo "==> Installing rpm-ostree layers: $RPM_OSTREE_LAYERS"
   rpm_ostree_layers
   echo "==> Setting up $DEVICE"
