@@ -1,14 +1,15 @@
 #!/bin/bash
-set -eu
+set -e
 
+WORKDIR=$(pwd)
 RPM_OSTREE_LAYERS='gtk-murrine-engine gtk2-engines gnome-tweaks lastpass-cli systemd-container'
-WALLPAPERS_DIR=$(pwd)/wallpapers
+WALLPAPERS_DIR=$WORKDIR/wallpapers
 AVAILABLE_WALLPAPERS=$(ls $WALLPAPERS_DIR)
 SUPPORTED_DEVICES="Blade Stealth, Blade 15"
-
+WALLPAPER="redforest.jpg"
+DEVICE=$(sudo dmidecode -s baseboard-product-name)
 
 wallpaper(){
-  WALLPAPER=$1
   if [ ! -f $WALLPAPERS_DIR/$WALLPAPER ]; then
     echo "==> Wallpaper does not exist, use one of the following:"
     tree $WALLPAPERS_DIR
@@ -16,17 +17,7 @@ wallpaper(){
   fi
 
   gsettings set org.gnome.desktop.background picture-uri file://$WALLPAPERS_DIR/$WALLPAPER
-}
-
-help_message(){
-      echo "Script Usage:"
-      echo " "
-      echo "	-l - install rpm-ostree [l]ayers"
-      echo "	-d - setup specified [d]evice: [$SUPPORTED_DEVICES]"
-      echo "	-h - print this [h]elp message"
-      echo "	-g - install [g]nome theme(Matcha Dark Aliz)"
-      echo "	-w - set [w]allpaper: [$AVAILABLE_WALLPAPERS]"
-      echo " "
+  gsettings set org.gnome.desktop.screensaver picture-options 'zoom'
 }
 
 gnome_theme(){
@@ -37,6 +28,9 @@ gnome_theme(){
   git clone https://github.com/vinceliuice/Matcha-gtk-theme
   ./Matcha-gtk-theme/install.sh -c dark -t aliz
   rm -rf ./Matcha-gtk-theme
+
+  gsettings set org.gnome.shell.extensions.user-theme name 'Matcha-dark-aliz'
+  gsettings set org.gnome.desktop.interface gtk-theme 'Matcha-dark-aliz'
 }
 
 rpm_ostree_layers(){
@@ -45,6 +39,10 @@ rpm_ostree_layers(){
 
 hw_setup_razer_blade_stealth(){
   rpm-ostree kargs --append intel_idle.max_cstate=4 --append button.lid_init_state=open --append pci=nomsi
+}
+
+hw_setup_razer_blade_15(){
+  rpm-ostree kargs --append button.lid_init_state=open
 }
 
 hw_setup(){
@@ -59,34 +57,17 @@ hw_setup(){
   esac
 }
 
-while getopts 'ld:gw:h' OPTION; do
-  case "$OPTION" in
-    l)
-      echo "==> Layering RPM-OSTree packages: $RPM_OSTREE_LAYERS"
-      rpm_ostree_layers
-      ;;
-    d)
-      DEVICE="$OPTARG"
-      echo "==> Setting kernel args for [d]evice: $DEVICE"
-      hw_setup
-      ;;
-    g)
-      echo "==> Installing Gnome theme Matcha Dark Aliz"
-      gnome_theme
-      ;;
-    w)
-      WALLPAPER="$OPTARG"
-      echo "==> Setting wallpaper $WALLPAPER"
-      wallpaper $WALLPAPER
-      ;;
-    h)
-      help_message
-      ;;
-    ?)
-      help_message
-      exit 1
-      ;;
-  esac
-done
-shift "$(($OPTIND -1))"
+main(){
+  echo "==> Installing rpm-ostree layers: $RPM_OSTREE_LAYERS"
+  rpm_ostree_layers
+  echo "==> Setting up $DEVICE"
+  hw_setup
+  echo "==> Installing Gnome theme"
+  gnome_theme
+  echo "==> Setting Wallpaper"
+  wallpaper
+}
 
+main
+echo "==> Setup done"
+exit 0
