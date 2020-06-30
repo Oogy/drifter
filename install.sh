@@ -8,6 +8,7 @@ AVAILABLE_WALLPAPERS=$(ls $WALLPAPERS_DIR)
 SUPPORTED_DEVICES="Blade Stealth, Blade 15"
 WALLPAPER="redforest.jpg"
 DEVICE=$(sudo dmidecode -s baseboard-product-name)
+MY_HOSTNAME="rucksack"
 
 wallpaper(){
   if [ ! -f $WALLPAPERS_DIR/$WALLPAPER ]; then
@@ -28,9 +29,6 @@ gnome_theme(){
   git clone https://github.com/vinceliuice/Matcha-gtk-theme
   ./Matcha-gtk-theme/install.sh -c dark -t aliz
   rm -rf ./Matcha-gtk-theme
-
-  gsettings set org.gnome.shell.extensions.user-theme name 'Matcha-dark-aliz'
-  gsettings set org.gnome.desktop.interface gtk-theme 'Matcha-dark-aliz'
 }
 
 rpm_ostree_layers(){
@@ -38,6 +36,7 @@ rpm_ostree_layers(){
 }
 
 hw_setup_razer_blade_stealth(){
+  rpm-ostree upgrade
   rpm-ostree kargs --append intel_idle.max_cstate=4 --append button.lid_init_state=open --append pci=nomsi
 }
 
@@ -57,6 +56,10 @@ hw_setup(){
   esac
 }
 
+set_hostname(){
+  hostnamectl set-hosname $MY_HOSTNAME
+}
+
 main(){
   echo "==> Installing rpm-ostree layers: $RPM_OSTREE_LAYERS"
   rpm_ostree_layers
@@ -66,6 +69,8 @@ main(){
   gnome_theme
   echo "==> Setting Wallpaper"
   wallpaper
+  echo "==> Set hostname $MY_HOSTNAME"
+  set_hostname
 }
 
 main
