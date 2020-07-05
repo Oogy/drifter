@@ -1,2 +1,2 @@
 # drifter
-Generalized and purpose built throw away workstations based on Podman/K8. 
+Immutable workstation and server configurations based on NixOS, the greatest operating system ever made. 
