@@ -5,13 +5,17 @@
     [ 
       ./hardware-configuration.nix
     ];
+
+  # Hardware
+  hardware.openrazer.enable = true;
+
   
   # Boot and Kernel
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.grub.useOSProber = true;
   boot.enableContainers = true;
-  boot.kernelParams = [ "button.lid_init_state=open" ];
+  boot.kernelParams = [ "button.lid_init_state=open" "pci=nomsi" ];
 
   # Networking  
   networking.hostName = "deathnote"; # Define your hostname.
